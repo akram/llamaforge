@@ -74,7 +74,7 @@ curl http://localhost:3000/health
 ```bash
 curl -X POST http://localhost:3000/jobs \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer test_bot_token" \
+  -H "Authorization: Bearer test_bot_api_token_12345" \
   -d '{
     "prUrl": "https://github.com/owner/repo/pull/1",
     "testTypes": ["unit"]

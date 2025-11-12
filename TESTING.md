@@ -51,7 +51,7 @@ GITHUB_INSTALLATION_ID=
 
 # Service API
 SERVICE_HMAC_SECRET=test_service_secret
-BOT_API_TOKEN=test_bot_token
+BOT_API_TOKEN=test_bot_api_token_12345
 PORT=3000
 NODE_ENV=development
 
@@ -159,7 +159,7 @@ Trigger a test generation job manually:
 ```bash
 curl -X POST http://localhost:3000/jobs \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer test_bot_token" \
+  -H "Authorization: Bearer test_bot_api_token_12345" \
   -d '{
     "prUrl": "https://github.com/your-org/your-repo/pull/123",
     "testTypes": ["unit", "snapshot"]
