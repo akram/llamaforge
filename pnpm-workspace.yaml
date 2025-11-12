@@ -1,4 +1,7 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
+  - apps/*
+  - packages/*
 
+ignoredBuiltDependencies:
+  - esbuild
+  - msgpackr-extract

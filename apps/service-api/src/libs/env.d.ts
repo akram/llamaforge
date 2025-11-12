@@ -1,0 +1,57 @@
+import { z } from 'zod';
+declare const envSchema: z.ZodObject<{
+    PORT: z.ZodEffects<z.ZodOptional<z.ZodString>, number | undefined, string | undefined>;
+    NODE_ENV: z.ZodDefault<z.ZodEnum<["development", "production", "test"]>>;
+    GITHUB_APP_ID: z.ZodEffects<z.ZodString, number, string>;
+    GITHUB_PRIVATE_KEY: z.ZodString;
+    GITHUB_WEBHOOK_SECRET: z.ZodOptional<z.ZodString>;
+    SERVICE_HMAC_SECRET: z.ZodString;
+    BOT_API_TOKEN: z.ZodString;
+    LLAMA_URL: z.ZodDefault<z.ZodString>;
+    LLAMA_API_KEY: z.ZodString;
+    LLAMA_MODEL: z.ZodDefault<z.ZodString>;
+    LLAMA_MAX_TOKENS: z.ZodDefault<z.ZodEffects<z.ZodString, number, string>>;
+    REDIS_URL: z.ZodDefault<z.ZodString>;
+    DATABASE_URL: z.ZodString;
+    DRY_RUN: z.ZodEffects<z.ZodOptional<z.ZodString>, boolean, string | undefined>;
+    LOG_LEVEL: z.ZodDefault<z.ZodEnum<["debug", "info", "warn", "error"]>>;
+    SENTRY_DSN: z.ZodOptional<z.ZodString>;
+}, "strip", z.ZodTypeAny, {
+    NODE_ENV: "development" | "production" | "test";
+    GITHUB_APP_ID: number;
+    GITHUB_PRIVATE_KEY: string;
+    LLAMA_URL: string;
+    LLAMA_API_KEY: string;
+    LLAMA_MODEL: string;
+    LLAMA_MAX_TOKENS: number;
+    REDIS_URL: string;
+    DATABASE_URL: string;
+    DRY_RUN: boolean;
+    LOG_LEVEL: "debug" | "info" | "warn" | "error";
+    SERVICE_HMAC_SECRET: string;
+    BOT_API_TOKEN: string;
+    PORT?: number | undefined;
+    GITHUB_WEBHOOK_SECRET?: string | undefined;
+    SENTRY_DSN?: string | undefined;
+}, {
+    GITHUB_APP_ID: string;
+    GITHUB_PRIVATE_KEY: string;
+    LLAMA_API_KEY: string;
+    DATABASE_URL: string;
+    SERVICE_HMAC_SECRET: string;
+    BOT_API_TOKEN: string;
+    NODE_ENV?: "development" | "production" | "test" | undefined;
+    LLAMA_URL?: string | undefined;
+    LLAMA_MODEL?: string | undefined;
+    LLAMA_MAX_TOKENS?: string | undefined;
+    REDIS_URL?: string | undefined;
+    DRY_RUN?: string | undefined;
+    LOG_LEVEL?: "debug" | "info" | "warn" | "error" | undefined;
+    PORT?: string | undefined;
+    GITHUB_WEBHOOK_SECRET?: string | undefined;
+    SENTRY_DSN?: string | undefined;
+}>;
+export type Env = z.infer<typeof envSchema>;
+export declare function getEnv(): Env;
+export {};
+//# sourceMappingURL=env.d.ts.map

@@ -12,7 +12,8 @@ fi
 
 # Run migrations using the worker's database initialization
 # In production, use a proper migration tool like node-pg-migrate or Knex
-node -e "
+# Use pnpm to run in the context of a package that has 'pg' installed
+pnpm --filter @llamaforge/service-api exec node -e "
 const { Pool } = require('pg');
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 

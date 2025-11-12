@@ -6,7 +6,6 @@ import type { GeneratedTests, BotPolicy } from '@llamaforge/types';
 import { getEnv } from '../../libs/env.js';
 
 const execAsync = promisify(exec);
-const env = getEnv();
 
 export interface WriteTestsOptions {
   repoPath: string;

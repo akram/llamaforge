@@ -1,6 +1,4 @@
 import Fastify from 'fastify';
-import { webhooks } from '@octokit/webhooks';
-import type { WebhookEventMap } from '@octokit/webhooks';
 import { handlePullRequest } from './handlers/pull_request.js';
 import { verifyHmac } from './security/verifyHmac.js';
 import { getEnv } from './libs/env.js';
@@ -48,10 +46,10 @@ app.post('/webhooks', async (request, reply) => {
       }
     }
 
-    const payload = request.body as WebhookEventMap[keyof WebhookEventMap];
+    const payload = request.body as Record<string, unknown>;
 
     if (event === 'pull_request') {
-      await handlePullRequest(payload as WebhookEventMap['pull_request'], app.log);
+      await handlePullRequest(payload as any, app.log);
     } else {
       app.log.info({ event }, 'Ignoring webhook event');
     }

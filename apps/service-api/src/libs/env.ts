@@ -1,4 +1,8 @@
 import { z } from 'zod';
+import { config } from 'dotenv';
+
+// Load .env file from project root
+config({ path: new URL('../../.env', import.meta.url).pathname });
 
 const envSchema = z.object({
   PORT: z.string().optional().transform((val) => (val ? parseInt(val, 10) : undefined)),

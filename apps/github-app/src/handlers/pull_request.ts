@@ -1,4 +1,3 @@
-import type { WebhookEventMap } from '@octokit/webhooks';
 import type { FastifyBaseLogger } from 'fastify';
 import { createHmac } from 'crypto';
 import { getEnv } from '../libs/env.js';
@@ -6,12 +5,28 @@ import type { GitHubPRPayload } from '@llamaforge/types';
 
 const env = getEnv();
 
+// Type for pull_request webhook payload
+interface PullRequestPayload {
+  action: string;
+  pull_request: {
+    number: number;
+    head: { sha: string };
+    base: { sha: string };
+    html_url: string;
+  };
+  repository: {
+    name: string;
+    owner: { login: string };
+  };
+  installation?: { id: number };
+}
+
 /**
  * Handle pull_request webhook events
  * Validates the event, builds a minimal payload, and forwards it to the service API
  */
 export async function handlePullRequest(
-  payload: WebhookEventMap['pull_request'],
+  payload: PullRequestPayload,
   logger: FastifyBaseLogger
 ): Promise<void> {
   const action = payload.action;

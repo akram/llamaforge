@@ -245,9 +245,32 @@ See `apps/github-app/src/perms/permissions.md` for details.
 
 MIT License - see [LICENSE](LICENSE) file.
 
+## Testing Locally
+
+For detailed testing instructions, see [TESTING.md](TESTING.md).
+
+Quick test setup:
+
+```bash
+# Run automated test setup
+./scripts/test-local.sh
+
+# Or manually:
+docker-compose up -d              # Start Redis & Postgres
+pnpm install                      # Install dependencies
+pnpm -w build                     # Build all packages
+./scripts/migrate.sh              # Initialize database
+
+# Start services (in separate terminals):
+pnpm --filter @llamaforge/service-api dev
+pnpm --filter @llamaforge/worker dev
+pnpm --filter @llamaforge/github-app dev
+```
+
 ## Support
 
 For issues and questions:
 - GitHub Issues: https://github.com/akram/llamaforge/issues
 - Documentation: See app-level READMEs in `apps/*/README.md`
+- Testing Guide: See [TESTING.md](TESTING.md)
 

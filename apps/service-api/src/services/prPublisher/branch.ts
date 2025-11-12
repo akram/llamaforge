@@ -17,7 +17,7 @@ export interface CreateBranchOptions {
  * Create a new branch from base SHA and push it
  */
 export async function createAndPushBranch(options: CreateBranchOptions): Promise<void> {
-  const { owner, repo, baseSHA, branchName, repoPath, octokit } = options;
+  const { owner, repo, baseSHA, branchName, repoPath } = options;
 
   const git = simpleGit(repoPath);
 

@@ -10,24 +10,24 @@
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "lint": "eslint src --ext .ts"
+    "lint": "eslint src"
   },
   "dependencies": {
+    "@llamaforge/types": "workspace:*",
     "@octokit/app": "^13.0.0",
     "@octokit/rest": "^20.0.0",
-    "@llamaforge/types": "workspace:*",
     "bullmq": "^5.4.0",
+    "dotenv": "^17.2.3",
     "ioredis": "^5.3.2",
     "pg": "^8.11.3",
     "simple-git": "^3.20.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/node": "^20.11.0",
+    "@types/node": "^24.10.1",
     "@types/pg": "^8.10.9",
     "tsx": "^4.7.0",
-    "typescript": "^5.3.3",
-    "vitest": "^1.2.0"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.8"
   }
 }
-

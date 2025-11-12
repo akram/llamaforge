@@ -83,6 +83,7 @@ export async function githubWebhookRoute(
     } catch (error) {
       fastify.log.error({ error }, 'Error enqueuing job');
       reply.code(500).send({ error: 'Failed to enqueue job' });
+      return;
     }
   });
 }

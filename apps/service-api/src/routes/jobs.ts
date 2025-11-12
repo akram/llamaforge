@@ -7,7 +7,10 @@ import type { JobRequest, JobStatus } from '@llamaforge/types';
 const env = getEnv();
 
 // Bearer token authentication middleware
-async function authenticate(request: FastifyInstance['request'], reply: FastifyInstance['reply']) {
+async function authenticate(
+  request: { headers: Record<string, string | undefined> },
+  reply: { code: (code: number) => { send: (data: unknown) => void } }
+) {
   const authHeader = request.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     reply.code(401).send({ error: 'Missing or invalid authorization header' });
@@ -114,9 +117,9 @@ export async function jobsRoutes(
         id: row.id,
         key: row.key,
         status: row.status,
-        createdAt: row.created_at,
-        updatedAt: row.updated_at,
-        lastError: row.last_error,
+        createdAt: row.created_at as Date,
+        updatedAt: row.updated_at as Date,
+        lastError: row.last_error || undefined,
         result: row.result,
       };
     } catch (error) {
