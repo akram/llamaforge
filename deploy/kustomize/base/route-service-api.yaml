@@ -1,0 +1,21 @@
+# OpenShift Route for Service API
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: service-api
+  namespace: llamaforge
+spec:
+  to:
+    kind: Service
+    name: service-api
+  port:
+    targetPort: 3000
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  # Rate limiting annotations (OpenShift specific)
+  annotations:
+    haproxy.router.openshift.io/rate-limit-connections: "true"
+    haproxy.router.openshift.io/rate-limit-connections.concurrent-tcp: "10"
+    haproxy.router.openshift.io/rate-limit-connections.rate-tcp: "100"
+

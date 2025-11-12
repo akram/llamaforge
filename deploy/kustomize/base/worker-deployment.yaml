@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: llamaforge
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+        - name: worker
+          image: ghcr.io/akram/llamaforge/worker:latest
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: GITHUB_APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: llamaforge-secrets
+                  key: github-app-id
+            - name: GITHUB_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: llamaforge-secrets
+                  key: github-private-key
+            - name: LLAMA_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: llamaforge-config
+                  key: llama-url
+            - name: LLAMA_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: llamaforge-secrets
+                  key: llama-api-key
+            - name: LLAMA_MODEL
+              valueFrom:
+                configMapKeyRef:
+                  name: llamaforge-config
+                  key: llama-model
+            - name: LLAMA_MAX_TOKENS
+              valueFrom:
+                configMapKeyRef:
+                  name: llamaforge-config
+                  key: llama-max-tokens
+            - name: REDIS_URL
+              value: redis://redis:6379
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: llamaforge-secrets
+                  key: database-url
+            - name: DRY_RUN
+              valueFrom:
+                configMapKeyRef:
+                  name: llamaforge-config
+                  key: dry-run
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            readOnlyRootFilesystem: false # Worker needs to write temp files
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+

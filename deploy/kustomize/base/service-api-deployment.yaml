@@ -1,0 +1,115 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-api
+  namespace: llamaforge
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+      targetPort: 3000
+  selector:
+    app: service-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-api
+  namespace: llamaforge
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: service-api
+  template:
+    metadata:
+      labels:
+        app: service-api
+    spec:
+      containers:
+        - name: service-api
+          image: ghcr.io/akram/llamaforge/service-api:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+            - name: NODE_ENV
+              value: "production"
+            - name: GITHUB_APP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: llamaforge-secrets
+                  key: github-app-id
+            - name: GITHUB_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: llamaforge-secrets
+                  key: github-private-key
+            - name: SERVICE_HMAC_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: llamaforge-secrets
+                  key: service-hmac-secret
+            - name: BOT_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: llamaforge-secrets
+                  key: bot-api-token
+            - name: LLAMA_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: llamaforge-config
+                  key: llama-url
+            - name: LLAMA_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: llamaforge-secrets
+                  key: llama-api-key
+            - name: LLAMA_MODEL
+              valueFrom:
+                configMapKeyRef:
+                  name: llamaforge-config
+                  key: llama-model
+            - name: LLAMA_MAX_TOKENS
+              valueFrom:
+                configMapKeyRef:
+                  name: llamaforge-config
+                  key: llama-max-tokens
+            - name: REDIS_URL
+              value: redis://redis:6379
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: llamaforge-secrets
+                  key: database-url
+            - name: DRY_RUN
+              valueFrom:
+                configMapKeyRef:
+                  name: llamaforge-config
+                  key: dry-run
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "1000m"
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+

@@ -1,0 +1,206 @@
+openapi: 3.0.3
+info:
+  title: LlamaForge Service API
+  version: 0.1.0
+  description: API for PR test generation service
+
+servers:
+  - url: http://localhost:3000
+    description: Local development
+  - url: https://api.llamaforge.example.com
+    description: Production
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  service:
+                    type: string
+                    example: service-api
+
+  /events/github:
+    post:
+      summary: Receive GitHub webhook event
+      description: Receives signed webhook events from GitHub App and enqueues test generation jobs
+      security:
+        - ServiceHMAC: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitHubPRPayload'
+      responses:
+        '200':
+          description: Job enqueued successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobId:
+                    type: string
+                    example: owner/repo:abc123
+                  status:
+                    type: string
+                    enum: [enqueued, existing]
+        '401':
+          description: Invalid signature
+        '500':
+          description: Failed to enqueue job
+
+  /jobs:
+    post:
+      summary: Manually trigger test generation
+      description: Manually trigger test generation for a PR URL
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobRequest'
+      responses:
+        '200':
+          description: Job enqueued successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobId:
+                    type: string
+                  status:
+                    type: string
+                    example: enqueued
+        '400':
+          description: Invalid PR URL
+        '401':
+          description: Missing or invalid authorization
+        '500':
+          description: Failed to enqueue job
+
+  /jobs/{id}:
+    get:
+      summary: Get job status
+      description: Retrieve the status of a test generation job
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Job ID or idempotency key
+      responses:
+        '200':
+          description: Job status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatus'
+        '404':
+          description: Job not found
+        '500':
+          description: Failed to fetch job status
+
+components:
+  schemas:
+    GitHubPRPayload:
+      type: object
+      required:
+        - installationId
+        - repo
+        - owner
+        - prNumber
+        - headSHA
+        - baseSHA
+        - htmlUrl
+      properties:
+        installationId:
+          type: integer
+        repo:
+          type: string
+        owner:
+          type: string
+        prNumber:
+          type: integer
+        headSHA:
+          type: string
+        baseSHA:
+          type: string
+        htmlUrl:
+          type: string
+        action:
+          type: string
+          enum: [opened, synchronize, reopened]
+
+    JobRequest:
+      type: object
+      required:
+        - prUrl
+      properties:
+        prUrl:
+          type: string
+          format: uri
+          example: https://github.com/owner/repo/pull/123
+        testTypes:
+          type: array
+          items:
+            type: string
+            enum: [unit, snapshot]
+
+    JobStatus:
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+        result:
+          type: object
+          properties:
+            prUrl:
+              type: string
+            testCount:
+              type: integer
+            coverageEstimate:
+              type: number
+        lastError:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+  securitySchemes:
+    ServiceHMAC:
+      type: apiKey
+      in: header
+      name: X-Service-Signature
+      description: HMAC SHA-256 signature of request body
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+

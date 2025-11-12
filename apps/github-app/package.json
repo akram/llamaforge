@@ -1,0 +1,30 @@
+{
+  "name": "@llamaforge/github-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "@octokit/app": "^13.0.0",
+    "@octokit/webhooks": "^12.0.0",
+    "@octokit/rest": "^20.0.0",
+    "@llamaforge/types": "workspace:*",
+    "fastify": "^4.25.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  }
+}
+

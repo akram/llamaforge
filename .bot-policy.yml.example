@@ -1,0 +1,48 @@
+# LlamaForge Bot Policy Configuration
+# Place this file as .bot-policy.yml in your repository root to configure test generation behavior
+
+# Allowed paths where tests can be written
+# Tests will only be created in directories that start with one of these paths
+allowedPaths:
+  - __tests__
+  - tests
+  - src/__tests__
+  - test
+  - spec
+
+# Forbidden glob patterns
+# Any path matching these patterns will be rejected
+forbiddenGlobs:
+  - "**/node_modules/**"
+  - "**/dist/**"
+  - "**/build/**"
+  - "**/.git/**"
+  - "**/coverage/**"
+
+# Maximum number of lines in the diff that triggers test generation
+# If a PR diff exceeds this, test generation will be skipped
+maxDiffLines: 5000
+
+# Test framework to use
+# Options: vitest, jest, mocha, pytest, other
+testFramework: vitest
+
+# Fields to mask in snapshot tests (for determinism)
+# These fields will be normalized/masked to ensure reproducible snapshots
+snapshotMaskFields:
+  - timestamp
+  - id
+  - uuid
+  - createdAt
+  - updatedAt
+  - _id
+  - __v
+
+# Require deterministic tests
+# If true, tests must use fixed seeds, mocked time, etc.
+requireDeterminism: true
+
+# Maximum size of generated PR (in lines of code)
+# If generated tests exceed this, the PR will be split or rejected
+maxPRSize: 500
+
